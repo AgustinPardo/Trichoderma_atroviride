@@ -4,7 +4,6 @@ import pandas as pd
 from BCBio import GFF
 from goatools.obo_parser import GODag
 
-
 def b2GoDic(file,reduct=True):
 	dic_table={}
 	table=pd.read_csv(file,sep='\t',keep_default_na=False)
@@ -36,7 +35,7 @@ def goGffDic(file):
 				qualifier=mRNA.qualifiers
 
 				id_gff=qualifier.get("ID",None)[0]
-				GO_gff=qualifier.get("Ontology_term",[])
+				GO_gff=qualifier.get("Ontology_term",[''])
 				out_dic[id_gff]=GO_gff
 	return out_dic
 
@@ -53,11 +52,12 @@ dic_list=[b2go_IMI_dic,b2go_annotation_dic,iprscan_dic,gff_dic]
 total_dic={}
 for dictionary in dic_list:
 	for key in dictionary:
+
 		if key in total_dic.keys():
 			total_dic[key]=dictionary[key]+total_dic[key]
-		else:
+		else:		
 			total_dic[key]=dictionary[key]
-			
+
 # Saco los que son iguales
 # Busco el GO name y GOspacename en go.obo
 # Actualizo los viejos
@@ -112,13 +112,13 @@ def goObo(lista_go_id):
 	return 	go_list_id, go_list_name, go_list_namespace
 
 salida = open("merge.txt","w")
+salida.write("geneid"+"\t"+"GOid"+"\t"+"GOname"+"\t"+"GOnamespace"+"\n")
 for key in total_dic:
 
 	values=list(set(total_dic[key]))
 	if '' in values:
 		values.remove('')
 	values=goObo(values)
-	print(values) 
 	salida.write(key+"\t")
 	salida.write(";".join(values[0])+"\t")
 	salida.write(";".join(values[1])+"\t")
