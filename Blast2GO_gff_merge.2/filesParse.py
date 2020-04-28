@@ -1,3 +1,5 @@
+#!python 2.7
+
 import pandas as pd
 from BCBio import GFF
 from goatools.obo_parser import GODag

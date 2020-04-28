@@ -2,7 +2,6 @@
 
 from filesParse import *
 
-
 # Extraigo los terminso GO de cada archivo
 # Diccionarios con una lista de terminos GO, 'Tatro_000998-T1': ['GO:0006333', 'GO:0005634']
 b2go_IMI_dic=b2GoDic("Tatroviride_IMI_B2GO.txt",True)
@@ -95,7 +94,6 @@ print(gen_conmasdeunGO)
 print(gen_sinGO)
 print(len(total_dic))
 print(len(GO_totales))
-
 
 # b2go_IMI_list=list(dict.fromkeys(b2go_IMI_dic))
 # b2go_annotation_list=list(dict.fromkeys(b2go_annotation_dic))

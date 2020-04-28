@@ -10,4 +10,5 @@
 !GO_merge/GO_merge.py
 !tatro/gff3-gbk.py
 !tatro/unigbkfasta.py
+!requirements.txt
 !gitignore.sh
