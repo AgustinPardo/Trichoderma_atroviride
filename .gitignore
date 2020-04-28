@@ -2,6 +2,7 @@
 !Blast2GO_gff_merge/gff-B2gGO-merge.py
 !gff3_extraction/gff3_extraction.py
 !gff3_extraction/gff3_2_fasta.py
+!Blast2GO_gff_merge.2/filesParse.py
 !Blast2GO_gff_merge.2/merge.py
 !pathway_tools_rna_data/ed_id_change.py
 !hmmer/LimIdExtractor.py
