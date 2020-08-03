@@ -21,8 +21,8 @@ for line in lines[1:]:
                 position="None"
                 contig="None"
             else:
-                position=coordinates[i].split(" ")[0][1:-1]+"->"+coordinates[i].split(" ")[2][1:-1]
-                contig=coordinates[i].split(" ")[3]
+                position=coordinates[i].split(" ")[0][1:]+"->"+coordinates[i].split(" ")[2][:-1]
+                contig=coordinates[i].split(" ")[3].rstrip()
             salida.write(gene+"\t"+position+"\t"+contig+"\t"+pathway+"\t"+pathway_name+"\t"+microClass+"\t"+macroClass+"\n")
             i=i+1
 
