@@ -1,4 +1,9 @@
-*/*
+*
+!gff3
+!gff3/change_id_per_name
+!gff3/extraction
 !*.py
 !requirements.txt
 !gitignore.sh
+
+
