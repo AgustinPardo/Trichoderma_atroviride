@@ -1,5 +1,10 @@
 def goCounts(dic_input):
 	"""
+	Method that describe the relation of gens and GO terms
+    Args:
+        dic_input: Dictiornary of gen(key) and GO terms as list(value)
+    Returns:
+        Print some basics stats of the relation of gene a Go terms"
 	"""
 	gen_conGO=0
 	gen_sinGO=0

@@ -3,7 +3,7 @@ from BCBio import GFF
 main_file = "Trichoderma_atroviride_chroms.gff3"
 lncRNA_enrich_source_file = "Trichoderma_atroviride_lncRNA_chroms.gff3"
 sRNA_enrich_source_file = "Trichoderma_atroviride_sRNA_chroms.gff3"
-out_put_file = "gff_enriched.gff3"
+out_put_file = "gff_enriched.gff"
 
 main_handle = open(main_file)
 out_handle = open(out_put_file, "w")
@@ -36,14 +36,13 @@ def enrich_feature(source_file, enrich_type, main_feature, main_rec_id):
                         main_feature.qualifiers[enrich_type]=parse_dic_to_str(source_feature.qualifiers)
         enrich_source_handle.close()
 
-main_gff = GFF.parse(main_handle)
-for main_rec in main_gff:
+for main_rec in GFF.parse(main_handle):
     main_rec_id=main_rec.id
     for main_feature in main_rec.features:
         if main_feature.type=="gene":          
             enrich_feature(lncRNA_enrich_source_file, "lncRNA", main_feature, main_rec_id)
             enrich_feature(sRNA_enrich_source_file, "sRNA", main_feature, main_rec_id)
-GFF.write(main_gff, out_handle)
+    GFF.write([main_rec], out_handle)
 
 main_handle.close()
 out_handle.close()

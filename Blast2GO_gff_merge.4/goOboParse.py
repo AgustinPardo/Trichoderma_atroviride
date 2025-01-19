@@ -16,6 +16,7 @@ def goOboDeprecated(go_id):
 				consider_list=consider_list + [term]
 			else:
 				consider_list=consider_list + [(go_id,term)]
+				
 	# Include the deprecated?
 	# consider_list=consider_list+[go_id]
 	else:
@@ -33,11 +34,12 @@ def goObo(lista_go_id):
 		else:
 			go_list=[go_id]+go_list
 
-	go_list_ND = list(dict.fromkeys(go_list+go_list_depr))
+	go_list_ND = go_list+go_list_depr
 
 	go_list_id=[]
 	go_list_name=[]
 	go_list_namespace=[]
+	
 	for go in go_list_ND:
 		if type(go) is tuple:
 			go_list_id = goOboNames(go[0])[0]+go_list_id
