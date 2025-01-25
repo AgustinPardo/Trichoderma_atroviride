@@ -1,6 +1,5 @@
 from filesParse import *
 from goOboParse import goObo
-from goCounts import goCounts
 
 
 def merge_inputs_dictionaries(list_input_dictionaries):

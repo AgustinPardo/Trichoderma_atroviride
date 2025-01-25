@@ -21,6 +21,9 @@ blast2go_omicsbox_goTerms = goTermsList(blast2go_omicsbox)
 blast2go_gff_export_gen=list(blast2go_gff_export.keys())
 blast2go_gff_export_goTerms = goTermsList(blast2go_gff_export)
 
+blast2go_annot_gen=list(blast2go_annot.keys())
+blast2go_annot_goTerms = goTermsList(blast2go_annot)
+
 eggnog_go_slim_gen=list(eggnog_go_slim.keys())
 eggnog_go_slim_goTerms = goTermsList(eggnog_go_slim)
 
@@ -29,9 +32,6 @@ eggnog_goTerms = goTermsList(eggnog)
 
 iprscan_gen=list(iprscan.keys())
 iprscan_goTerms = goTermsList(iprscan)
-
-blast2go_annot_gen=list(blast2go_annot.keys())
-blast2go_annot_goTerms = goTermsList(blast2go_annot)
 
 
 from supervenn import supervenn
@@ -53,29 +53,29 @@ labels =['blast2go_omicsbox_gen',
          'iprscan_gen',
          ]
 
-plt.figure(figsize=(20, 10))
-supervenn(sets, labels, rotate_col_annotations=True,
-          col_annotations_area_height=1.2, sets_ordering='minimize gaps',
-          min_width_for_annotation=180)
-plt.show()
+# plt.figure(figsize=(20, 10))
+# supervenn(sets, labels, rotate_col_annotations=True,
+#           col_annotations_area_height=1.2, sets_ordering='minimize gaps',
+#           min_width_for_annotation=180)
+# plt.show()
 
-supervenn(sets, labels, side_plots=False, widths_minmax_ratio=0.05)
-plt.show()
+# supervenn(sets, labels, side_plots=False, widths_minmax_ratio=0.05)
+# plt.show()
 
 sets = [set(blast2go_omicsbox_goTerms), 
         set(blast2go_gff_export_goTerms),
         set(blast2go_annot_goTerms),
         set(eggnog_go_slim_goTerms),
         set(eggnog_goTerms),
-        set(iprscan_goTerms),
+        set(iprscan_goTerms)
         ]
 
 labels =['blast2go_omicsbox_goTerms',
          'blast2go_gff_export_goTerms',
-         'blast2go_annot_goTerms'
+         'blast2go_annot_goTerms',
          'eggnog_go_slim_goTerms',
          'eggnog_goTerms',
-         'iprscan_goTerms',
+         'iprscan_goTerms'
          ]
 
 plt.figure(figsize=(20, 10))
