@@ -1,6 +1,6 @@
 from goatools.obo_parser import GODag
 
-obodag=GODag("go.obo", optional_attrs={'consider', 'replaced_by'}, load_obsolete=True, prt=None) 
+obodag=GODag("inputs/go.obo", optional_attrs={'consider', 'replaced_by'}, load_obsolete=True, prt=None) 
 
 def goOboNames(go_id):
 	go_name = obodag[go_id].name
