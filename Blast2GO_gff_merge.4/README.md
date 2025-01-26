@@ -27,19 +27,18 @@
   * datasets_goTerms_comparison.png: Venn diagram showing GO term overlap
 
 ### Summary
-* **Objective:** To extract and analyze GO terms associated with Trichoderma Atroviride genes.
+* **Objective:** To enrich and analyze GO terms associated with Trichoderma Atroviride genes.
 * **Approach:**
   * Collected gene annotation data from various sources.
   * Utilized the GO ontology to provide functional descriptions of genes and filter deprecate ones.
-  * Performed enrichment analysis to identify over-represented GO terms of source inputs.
-  * Visualized dataset overlaps using Venn diagrams.
+  * Performed enrichment identifieng a comprehensive set of GO terms associated with Trichoderma Atroviride genes.
+  * Visualized input dataset overlaps using Venn diagrams.
 * **Findings:**
-  * Identified a comprehensive set of GO terms associated with Trichoderma Atroviride genes.
-  * Provided insights into gene function and biological processes.
+  * Analysis the source of GO terms and genes from various inputs datasets. 
   * Created a resource for further analysis of Trichoderma genomics.
 
 
-### Mapping table between source inputs files and gene/Go terms
+### Mapping table of inputs files and gene/Go terms
 | File | blast2go_omicsbox | blast2go_gff_export | blast2go.annot |  eggnog_go_slim | eggnog | iprscan |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **gene** | SeqName | GFF qualifier: ID | Column index 1 | Query ID | Query ID | query |
@@ -47,5 +46,9 @@
 
 
 ### Pipeline representation of the GO Analysis and Enrcichemnt process
-
 <img src="https://docs.google.com/drawings/d/1xBou5oDCogTMyGPRkygumIrgs8nRcW-_ijmAyqmiqkk/export/png"/>
+
+
+### Overlaps analysis of GO terms and genes in the input files
+<img src="img/datasets_gen_comparison.png">
+<img src="img/datasets_goTerms_comparison.png">
