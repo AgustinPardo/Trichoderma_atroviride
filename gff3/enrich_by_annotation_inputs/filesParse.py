@@ -1,5 +1,5 @@
 import pandas as pd
-from BCBio import GFF
+import re
 
 def b2GoAnnot(file):
 	"""
@@ -29,7 +29,7 @@ def b2GoAnnot(file):
 
 def eggnogTxt(file):
 	"""
-	Method to eggnog.txt format
+	Method to Trichoderma_atroviride_IMI206040_V3.proteins.fa_eggnog.txt format
 	Args:
 	     file: file path
 	Returns: 
@@ -94,7 +94,7 @@ def omicsboxTableDiamondBlastTxt(file):
 	Args:
 	     file: file path
 	Returns:
-			{gene: {"Dbxref": {"InterPro": value}, "note": {"EC": value}, "Ontology_term": value}}
+		{gene: {"Dbxref": {"InterPro": value}, "note": {"EC": value}, "Ontology_term": value}}
  
 		Not matching retuns ''
 	"""
@@ -134,7 +134,7 @@ def omicsboxPathwayExportTxt(file):
 	Args:
 	     file: file path
 	Returns:
-			{gene: {"note": {"Pathways": value}}
+		{gene: {"note": {"Pathways": value}}
  
 		Not matching retuns ''
 	"""
@@ -159,13 +159,100 @@ def proteinsFaIprscnTsv(file):
 	Args:
 	     file: file path
 	Returns: 
+		{'Tatro_005317': {'Pathways': [''], 'Ontology_term': [''], 'Dbxref': {'Gene3D': ['G3DSA:3.40.50.720'], 'PANTHER': ['PTHR42760'], 'Pfam': ['PF13561'], 'FunFam': ['G3DSA:3.40.50.720:FF:000084']}}}
 		 Not matching retuns ['']
 	"""
+	output_dic = {}
+
+	table = pd.read_csv(file, sep='\t', keep_default_na=False)
+
+	for i in range(len(table)):
+		
+		gene = table.iloc[i, 0]
+
+		dbxref_term_type = table.iloc[i, 3]
+		dbxref_term = table.iloc[i, 4]
+
+		if dbxref_term_type in ["PANTHER", "FunFam", "Pfam","ProSiteProfiles","Gene3D"]:
+			if gene in output_dic.keys():
+				if "Dbxref" in output_dic[gene].keys():
+					if dbxref_term_type in output_dic[gene]["Dbxref"]:
+						output_dic[gene]["Dbxref"].update({dbxref_term_type: list(set(output_dic[gene]["Dbxref"][dbxref_term_type] + [dbxref_term]))})
+					else:
+						output_dic[gene]["Dbxref"].update({dbxref_term_type: [dbxref_term]})
+				else:
+					output_dic[gene].update({"Dbxref": {dbxref_term_type: [dbxref_term]}})
+			else:
+				output_dic.update({gene: {"Dbxref": {dbxref_term_type: [dbxref_term]}}})
 
 
+		pathway_term = table.iloc[i, 14]
+		pathway_term = pathway_term.replace("-", "")
+		if gene in output_dic.keys():
+			if "Pathways" in output_dic[gene]:
+				output_dic[gene]["Pathways"] = list(set(output_dic[gene]["Pathways"] + [pathway_term]))
+			else:
+				output_dic[gene]["Pathways"] = [pathway_term]
+		else:
+			output_dic[gene] = {"Pathways": [pathway_term]}
 
 
-def xxx(file):
+		ontology_term = table.iloc[i, 13]
+		ontology_term = ontology_term.replace("-", "")
+		if gene in output_dic.keys():
+			if "Ontology_term" in output_dic[gene]:
+				output_dic[gene]["Ontology_term"] = list(set(output_dic[gene]["Ontology_term"] + [ontology_term]))
+			else:
+				output_dic[gene]["Ontology_term"] = [ontology_term]
+		else:
+			output_dic[gene] = {"Ontology_term": [ontology_term]}	
+
+	return output_dic
+
+
+def allAnnotationsTabular(file):
+	"""
+	Method to Tatro_V3_annot_allannotations.tabular format
+	Args:
+	     file: file path
+	Returns: 
+		 Not matching retuns ['-']
+	"""
+
+	output_dic = {}
+
+	table = pd.read_csv(file, sep='\t', keep_default_na=False)
+
+	for i in range(len(table)):
+		
+		gene = table.iloc[i, 1]
+		parent_term = table.iloc[i, 0]
+		product_term = table.iloc[i, 7]
+		dbxref_pfam_term = table.iloc[i,12]
+
+		dbxref_interPro_term = table.iloc[i,13]
+		pattern = r"\bIPR\w+\b"
+		dbxref_interPro_term = re.findall(pattern, dbxref_interPro_term)
+
+		note_ECnumber_term = table.iloc[i,10]
+		note_AntiSMASH_term = table.iloc[i,21]
+
+		note_notes_term = table.iloc[i,22]
+		pattern = r"\bSMCOG\w+\b"
+		note_notes_term = re.findall(pattern, note_notes_term)
+
+		ontology_term = table.iloc[i,16]
+		print(ontology_term)
+		# print(gene, parent_term, product_term, dbxref_pfam_term, 
+		# dbxref_interPro_term, note_ECnumber_term, note_AntiSMASH_term, note_notes_term,
+		# ontology_term, sep="*")
+	
+	return output_dic
+
+allAnnotationsTabular("inputs/Tatro_V3_annot_allannotations.tabular")
+
+
+def xxxxx(file):
 	"""
 	Method to 
 	Args:
@@ -173,5 +260,5 @@ def xxx(file):
 	Returns: 
 		 Not matching retuns ['-']
 	"""
+	pass
 	
-
