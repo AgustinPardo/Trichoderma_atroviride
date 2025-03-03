@@ -2,6 +2,9 @@ from Bio import SeqIO
 import pandas as pd
 import re
 
+
+"""Verificar porque los genes de antishas no estan incluidos"""
+
 def b2GoAnnot(file):
 	"""
 	Method to blast2go.annot format
@@ -50,7 +53,15 @@ def eggnogTxt(file):
 	table = pd.read_csv(file, sep='\t', keep_default_na=False)
 
 	for i in range(len(table)):
-		product_term = table.iloc[i, 3]	
+		product_term = table.iloc[i, 3]
+		product_term = product_term.replace("(", "")	
+		product_term = product_term.replace(")", "")
+		product_term = product_term.replace(",", "")
+		product_term = product_term.replace("'", "")
+		product_term = product_term.replace("]", "")
+		product_term = product_term.replace("[", "")
+		product_term = product_term.replace("+", "")
+		product_term = product_term.replace(";", "")
 
 		note_EC_term = [table.iloc[i, 7]]
 		note_EC_term.remove("") if "" in note_EC_term else None
@@ -91,20 +102,15 @@ def omicsboxTableTxt(file):
 	table = pd.read_csv(file, sep='\t', keep_default_na=False)
 
 	for i in range(len(table)):
-		dbxref_term = table.iloc[i, 13]	
-		dbxref_term = dbxref_term.split(";")
-		for term in dbxref_term:
-			if term not in ["no IPS match"]:
-				dbxref_term = table.iloc[i,13]
-				pattern_IPR = r"\bIPR\w+\b"
-				pattern_PF = r"\bPF\w+\b"
-				dbxref_interPro_term = re.findall(pattern_IPR, dbxref_term)
-				dbxref_pfam_term = re.findall(pattern_PF, dbxref_term)
-				dbxref_pfam_term = [elem for elem in dbxref_pfam_term if elem not in ["PFAM"]]
+		dbxref_term = table.iloc[i,13]
+		pattern_IPR = r"\bIPR\w+\b"
+		pattern_PF = r"\bPF\w+\b"
+		dbxref_interPro_term = re.findall(pattern_IPR, dbxref_term)
+		dbxref_pfam_term = re.findall(pattern_PF, dbxref_term)
+		dbxref_pfam_term = [elem for elem in dbxref_pfam_term if elem not in ["PFAM"]]
     
 		ontology_term = table.iloc[i, 9].split('; ')
 		ontology_term = [i[2:] for i in ontology_term]
-
 		ontology_term.remove("") if "" in ontology_term else None		
 
 		interPro_go_ids_term=table.iloc[i, 14].split('; ')
@@ -135,7 +141,7 @@ def omicsboxTableDiamondBlastTxt(file):
 				'EC': []}, 
 			'Ontology_term': ['GO:0005634', 'GO:0006355']}
  
-		Not matching retuns ''
+		Not matching retuns []
 	"""
 	output_dic = {}
 	table = pd.read_csv(file, sep='\t', keep_default_na=False)
@@ -143,8 +149,8 @@ def omicsboxTableDiamondBlastTxt(file):
 	for i in range(len(table)):
 		dbxref_term = table.iloc[i, 13]	
 
-		dbxref_term = dbxref_term.split(" ")
-		interPro_term = [term for term in dbxref_term if "IPR" in term]
+		pattern_IPR = r"\bIPR\w+\b"
+		dbxref_interPro_term = re.findall(pattern_IPR, dbxref_term)
 
 		note_enzyme_code_term = table.iloc[i, 11].split('; ')
 		note_enzyme_code_term = [i for i in note_enzyme_code_term]
@@ -162,7 +168,7 @@ def omicsboxTableDiamondBlastTxt(file):
 		interPro_go_ids_term.remove(" IPS match") if " IPS match" in interPro_go_ids_term else None
 		
 		output_dic[table.iloc[i, 2]] = {
-			"Dbxref": {"InterPro": interPro_term},
+			"Dbxref": {"InterPro": dbxref_interPro_term},
 			"note": {"EC": note_enzyme_code_term},
 			"Ontology_term": list(set(ontology_term + interPro_go_ids_term))}
 
@@ -180,19 +186,30 @@ def omicsboxPathwayExportTxt(file):
 			{'note': {
 				'Pathways': ['R-BTA-9845576']}
  
-		Not matching retuns ''
+		Not matching retuns []
 	"""
 	output_dic = {}
 	table = pd.read_csv(file, sep='\t', keep_default_na=False)
 
 	for i in range(len(table)):
-		note_pathways_term = table.iloc[i, 8]	
+		note_pathways_term = table.iloc[i, 8]
+		note_pathways_term = note_pathways_term.replace("(", "")	
+		note_pathways_term = note_pathways_term.replace(")", "")
+		note_pathways_term = note_pathways_term.replace(",", "")
+		note_pathways_term = note_pathways_term.replace("'", "")
+		note_pathways_term = note_pathways_term.replace("]", "")
+		note_pathways_term = note_pathways_term.replace("[", "")
+		note_pathways_term = note_pathways_term.replace("+", "")
+		note_pathways_term = note_pathways_term.replace(";", "")
+
+		note_pathways_term=note_pathways_term.split(";")
+		note_pathways_term.remove("") if "" in note_pathways_term else None	
 		output_dic[table.iloc[i, 0]] = {
-			"note": {"Pathways": [note_pathways_term]}}
+			"note": {"Pathways": note_pathways_term}}
 
 	return output_dic
 
-# print(omicsboxPathwayExportTxt("inputs/Omicsbox_pathway_export.txt"))
+#print(omicsboxPathwayExportTxt("inputs/Omicsbox_pathway_export.txt"))
 
 
 def proteinsFaIprscnTsv(file):
@@ -269,9 +286,9 @@ def allAnnotationsTabular(file):
 		'Dbxref': {
 			'InterPro': ['IPR001227', 'IPR006162'],
 			'PFAM': ['PF00106', 'PF00107']},
-			'note': {'SMCOG': ['SMCOG1002'],
-			  		 'BUSCO':['EOG0926390Q'],
-					 'CAZyme': []}
+		'note': {'SMCOG': ['SMCOG1002'],
+			  	 'BUSCO':['EOG0926390Q'],
+				 'CAZyme': []}
 		}
 		 Not matching retuns []
 	"""
@@ -284,7 +301,16 @@ def allAnnotationsTabular(file):
 		
 		gene = table.iloc[i, 1]
 		parent_term = table.iloc[i, 0]
+
 		product_term = table.iloc[i, 7]
+		product_term = product_term.replace("(", "")	
+		product_term = product_term.replace(")", "")
+		product_term = product_term.replace(",", "")
+		product_term = product_term.replace("'", "")
+		product_term = product_term.replace("]", "")
+		product_term = product_term.replace("[", "")
+		product_term = product_term.replace("+", "")
+		product_term = product_term.replace(";", "")
 
 		dbxref_pfam_term = table.iloc[i,12]
 		dbxref_pfam_term = dbxref_pfam_term.split(";")
@@ -330,7 +356,7 @@ def annotTbl(file):
 				'InterPro': ['IPR036291', 'IPR002347']}, 
 			'note': {
 				'SMCOG': ['SMCOG1001'],
-				'CAZy': ['GH93'],
+				'CAZyme': ['GH93'],
 				'MEROPS': ['MER0044357'],
 				'BUSCO': []}}				
 
@@ -359,6 +385,14 @@ def annotTbl(file):
 				gene = row_split[4].split("|")[2].rstrip()
 			if row_split[3] == "product":
 				product_term = row_split[4].rstrip()
+				product_term = product_term.replace("(", "")	
+				product_term = product_term.replace(")", "")
+				product_term = product_term.replace(",", "")
+				product_term = product_term.replace("'", "")
+				product_term = product_term.replace("]", "")
+				product_term = product_term.replace("[", "")
+				product_term = product_term.replace("+", "")
+				product_term = product_term.replace(";", "")
 			
 			if row_split[3] == "db_xref":
 				dbxref_term = row_split[4].rstrip().split(":")
@@ -402,6 +436,7 @@ def annotTbl(file):
 	
 # annotTbl("inputs/Tatro_V3_annot.tbl")
 
+
 def antismashGbk(file):
 	"""
 	Method to Tatroviride_IMI206040_antismashiV3.gbk format
@@ -417,48 +452,88 @@ def antismashGbk(file):
 
 		 Not matching retuns []
 	"""
-	output_dic = {}
-	gbk_input = SeqIO.parse(file, "genbank") 
+
+	gbk_input = SeqIO.parse(file, 'genbank')
+	# Store gene features by location
+	gene_features = []
 	for seq_record in gbk_input:
-
-		passing_feature_checker=[]
-		parent_gene_term=""
-		parent_CDS_term=""
-
+		# First, collect all gene features and locations
 		for feature in seq_record.features:
-	
 			if feature.type == "gene":
-				passing_feature_checker.append("gene")
 				parent_gene_term = feature.qualifiers["locus_tag"][0]
+				gene_features.append(parent_gene_term)
 
-			if feature.type == "CDS":
-				passing_feature_checker.append("CDS")		
-				gene = feature.qualifiers["protein_id"][0][5:]
-				parent_CDS_term = feature.qualifiers["locus_tag"][0]
-				product_term = feature.qualifiers["product"][0]
+	gbk_input = SeqIO.parse(file, 'genbank')
+	cds_pfam_feature={}
+	for seq_record in gbk_input:
+		for feature in seq_record.features:
+			if feature.type == "CDS":	
+				for gene in gene_features:
 
-				dbxref_pfam_term=[]
-				ontology_term_parsed=[]
+					if (feature.qualifiers["locus_tag"][0] == gene):
+						protein_id = feature.qualifiers["protein_id"][0][5:]
+						parent_CDS_term = feature.qualifiers["locus_tag"][0]
+						product_term = feature.qualifiers["product"][0]
+						if gene not in cds_pfam_feature:					
+							cds_pfam_feature[gene]=["protein_id:"+protein_id, "parent_CDS_term:"+parent_CDS_term, "product_term:"+product_term]
+						else:
+							cds_pfam_feature[gene] = cds_pfam_feature[gene] + ["protein_id:"+protein_id, "parent_CDS_term:"+parent_CDS_term, "product_term:"+product_term]
 
 			if feature.type == "PFAM_domain":
-				dbxref_term = feature.qualifiers["db_xref"]
-				dbxref_pfam_term = list(set([term for term in dbxref_term if "PF" in term]+dbxref_pfam_term))
-				
-				if "gene_ontologies" in feature.qualifiers.keys():
-					ontology_term = feature.qualifiers["gene_ontologies"]
-					ontology_term_parsed = list(set([term.split(": ")[0] for term in ontology_term]+ontology_term_parsed))	
+				for gene in gene_features:
+				# for gene, location in gene_features.items():
+					if (feature.qualifiers["locus_tag"][0] == gene):
+						dbxref_term = feature.qualifiers["db_xref"]
+						dbxref_pfam_term = list(set([term for term in dbxref_term if "PF" in term]))					
+						if "gene_ontologies" in feature.qualifiers.keys():
+							ontology_term = feature.qualifiers["gene_ontologies"]
+							ontology_term_parsed = list(set([term.split(": ")[0] for term in ontology_term]))
+						else:
+							ontology_term_parsed=[]
 
-			if (parent_gene_term!=parent_CDS_term 
-				and "CDS" in passing_feature_checker 
-				and "gene" in passing_feature_checker):
-				output_dic[gene] = {
-						"Parent": parent_CDS_term,
-						"product": product_term,
-						"Dbxref":{"PFAM": dbxref_pfam_term},
-						"Ontology_term": ontology_term_parsed}
-				passing_feature_checker=[]
-	print(output_dic["Tatro_002739-T1"])
+						if gene not in cds_pfam_feature:					
+							cds_pfam_feature[gene]=["dbxref_pfam_term:"+",".join(dbxref_pfam_term), "ontology_term_parsed:"+",".join(ontology_term_parsed)]
+						else:
+							cds_pfam_feature[gene] = cds_pfam_feature[gene] + ["dbxref_pfam_term:"+",".join(dbxref_pfam_term), "ontology_term_parsed:"+",".join(ontology_term_parsed)]
+	output_dic = {}
+	
+	def find_strings_with_substring(string_list, substring):
+		result_list = []
+		for string in string_list:
+			if substring in string:
+				result_list.append(string)
+		return [result.replace(substring, "") for result in result_list]
+
+	for gene, values in cds_pfam_feature.items():
+		protein_id = find_strings_with_substring(values, "protein_id:")
+		protein_id = protein_id[0]
+
+		parent_CDS_term = find_strings_with_substring(values, "parent_CDS_term:")
+		parent_CDS_term = parent_CDS_term[0]
+
+		product_term = find_strings_with_substring(values, "product_term:")
+		product_term = product_term[0]
+		product_term = product_term.replace("(", "")	
+		product_term = product_term.replace(")", "")
+		product_term = product_term.replace(",", "")
+		product_term = product_term.replace("'", "")
+		product_term = product_term.replace("]", "")
+		product_term = product_term.replace("[", "")
+		product_term = product_term.replace("+", "")
+		product_term = product_term.replace(";", "")
+
+		dbxref_pfam_term = list(set(find_strings_with_substring(values, "dbxref_pfam_term:")))
+		dbxref_pfam_term.remove("") if "" in dbxref_pfam_term else None
+
+		ontology_term = list(set(find_strings_with_substring(values, "ontology_term_parsed:")))
+		ontology_term.remove("") if "" in ontology_term else None	
+
+		output_dic[protein_id] = {
+		"Parent": parent_CDS_term,
+		"product": product_term,
+		"Dbxref":{"PFAM": dbxref_pfam_term},
+		"Ontology_term": ontology_term_parsed}
+
 	return output_dic
 
 # antismashGbk("inputs/Tatroviride_IMI206040_antismashiV3.gbk")
-
