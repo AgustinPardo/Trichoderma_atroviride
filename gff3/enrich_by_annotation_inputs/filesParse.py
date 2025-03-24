@@ -64,6 +64,7 @@ def eggnogTxt(file):
 		product_term = product_term.replace(";", "")
 
 		note_EC_term = [table.iloc[i, 7]]
+		note_EC_term = [i.replace("EC:", "") for i in note_EC_term]
 		note_EC_term.remove("") if "" in note_EC_term else None
 
 		note_KEGG_term = [table.iloc[i, 11]]
@@ -119,6 +120,7 @@ def omicsboxTableTxt(file):
 		interPro_go_ids_term.remove("no GO terms") if "no GO terms" in interPro_go_ids_term else None
 		interPro_go_ids_term.remove(" GO terms") if " GO terms" in interPro_go_ids_term else None
 		interPro_go_ids_term.remove(" IPS match") if " IPS match" in interPro_go_ids_term else None
+		interPro_go_ids_term.remove("") if "" in interPro_go_ids_term else None
 		
 		output_dic[table.iloc[i, 2]] = {
 			"Dbxref":{"InterPro": list(set(dbxref_interPro_term)), "PFAM": list(set(dbxref_pfam_term))},
@@ -153,8 +155,8 @@ def omicsboxTableDiamondBlastTxt(file):
 		dbxref_interPro_term = re.findall(pattern_IPR, dbxref_term)
 
 		note_enzyme_code_term = table.iloc[i, 11].split('; ')
-		note_enzyme_code_term = [i for i in note_enzyme_code_term]
-		note_enzyme_code_term.remove("") if "" in note_enzyme_code_term else None		
+		note_enzyme_code_term = [i.replace("EC:", "") for i in note_enzyme_code_term]
+		note_enzyme_code_term.remove("") if "" in note_enzyme_code_term else None
 
 		ontology_term = table.iloc[i, 9].split('; ')
 		ontology_term = [i[2:] for i in ontology_term]
@@ -431,7 +433,7 @@ def annotTbl(file):
 
 		except IndexError:
 			pass
-
+	file.close()
 	return output_dic
 	
 # annotTbl("inputs/Tatro_V3_annot.tbl")

@@ -45,38 +45,42 @@ def add_qualifiers_to_gff(gff_input_file,
 
                 if sub_features.type == "mRNA":            
                     input_gff_gene_id = sub_features.qualifiers["ID"][0]    
-                    try:
-                        gene_new_qualifier_dic = additional_qualifiers[input_gff_gene_id]                       
-                    except:                        
-                        text_gene_non_exist = input_gff_gene_id + " not exist in " + additional_qualifiers_source
-                        print(text_gene_non_exist)
-                        continue
-                    # add the new qualifiers.
 
-                    for new_qualifier, new_value_qualifier in gene_new_qualifier_dic.items():   
-                        if new_qualifier in sub_features.qualifiers:
-                            if new_qualifier in ["Dbxref", "note"]:
-                                for sub_qual_key, sub_qual_value in new_value_qualifier.items():
-                                    if len(sub_qual_value)>1:
-                                        for element in qualifier_dic_list_format_to_gff(sub_qual_key, sub_qual_value):
+                    try:
+                        gene_new_qualifier_dic = additional_qualifiers[input_gff_gene_id]   
+
+                        if input_gff_gene_id=="Tatro_000028-T1":
+                              print(gene_new_qualifier_dic)
+
+                        # add the new qualifiers.
+                        for new_qualifier, new_value_qualifier in gene_new_qualifier_dic.items():
+                            if new_qualifier in sub_features.qualifiers:
+                                if new_qualifier in ["Dbxref", "note"]:
+                                    for sub_qual_key, sub_qual_value in new_value_qualifier.items():
+                                        if len(sub_qual_value)>1:
+                                            for element in qualifier_dic_list_format_to_gff(sub_qual_key, sub_qual_value):
+                                                if element not in sub_features.qualifiers[new_qualifier]:
+                                                    sub_features.qualifiers[new_qualifier].append(element) 
+            
+                                else:   
+                                    if new_qualifier == "Ontology_term" and new_value_qualifier!= []:
+                                        for element in new_value_qualifier:
                                             if element not in sub_features.qualifiers[new_qualifier]:
                                                 sub_features.qualifiers[new_qualifier].append(element) 
-         
-                            else:   
-                                if new_qualifier == "Ontology_term":
-                                    for element in new_value_qualifier:
-                                        if element not in sub_features.qualifiers[new_qualifier]:
-                                            sub_features.qualifiers[new_qualifier].append(element) 
-                                else:                    
-                                    sub_features.qualifiers[new_qualifier].append(new_value_qualifier)
+                                    else:                    
+                                        sub_features.qualifiers[new_qualifier].append(new_value_qualifier)
 
-                        else:
-                            if new_qualifier in ["Dbxref", "note"]:
-                                for sub_qual_key, sub_qual_value in new_value_qualifier.items():
-                                    if len(sub_qual_value)>1:
-                                        sub_features.qualifiers[new_qualifier] = qualifier_dic_list_format_to_gff(sub_qual_key, sub_qual_value) 
-                            else:    
-                                sub_features.qualifiers[new_qualifier] = new_value_qualifier
+                            else:
+                                if new_qualifier in ["Dbxref", "note"]:
+                                    for sub_qual_key, sub_qual_value in new_value_qualifier.items():
+                                        if len(sub_qual_value)>1:
+                                            sub_features.qualifiers[new_qualifier] = qualifier_dic_list_format_to_gff(sub_qual_key, sub_qual_value) 
+                                else:
+                                    if new_value_qualifier!= []:    
+                                        sub_features.qualifiers[new_qualifier] = new_value_qualifier
+                    except:                        
+                        text_gene_non_exist = input_gff_gene_id + " not exist in " + additional_qualifiers_source
+                        #print(text_gene_non_exist)
 
         rec_output.append(rec)
 
@@ -96,8 +100,8 @@ inputs_list = [
     (omicsboxPathwayExportTxt("inputs/Omicsbox_pathway_export.txt"), "omicsboxPathwayExportTxt_input"),
     (proteinsFaIprscnTsv("inputs/Trichoderma_atroviride_IMI206040.proteins.fa.iprscn.tsv"), "proteinsFaIprscnTsv_input"),
     (allAnnotationsTabular("inputs/Tatro_V3_annot_allannotations.tabular"),"allAnnotationsTabular_input"),
-    (annotTbl("inputs/Tatro_V3_annot.tbl"), "annotTbl_input"),
-    (antismashGbk("inputs/Tatroviride_IMI206040_antismashiV3.gbk"), "antismashGbk_input")
+    (antismashGbk("inputs/Tatroviride_IMI206040_antismashiV3.gbk"), "antismashGbk_input"),
+    (annotTbl("inputs/Tatro_V3_annot.tbl"), "annotTbl_input")
     ]
 
 add_qualifiers_to_gff("inputs/Trichoderma_atroviride_IMI206040V3.gff3",
@@ -121,6 +125,5 @@ with open("outputs/enriched_output.gff", "r") as f:
 f.close()
 with open("outputs/enriched_output.gff", "w") as f:
     for line in gff_file_lines_cleaned:
-        if "remark" not in line:
             f.write(line)
 f.close()
